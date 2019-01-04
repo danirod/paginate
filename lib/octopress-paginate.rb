@@ -136,6 +136,8 @@ module Octopress
         else
           page.site.posts.docs.reverse
         end
+      elsif page['paginate']['collection'] == 'all' and not page.site.collections.key? 'all'
+        page.site.documents.sort
       else
         page.site.collections[page['paginate']['collection']].docs
       end
