@@ -136,8 +136,8 @@ module Octopress
         else
           page.site.posts.docs.reverse
         end
-      elsif page['paginate']['collection'] == 'all' and not page.site.collections.key? 'all'
-        page.site.documents.sort
+      elsif page['paginate']['collection'].is_a? Array
+        page['paginate']['collection'].flat_map{|c| page.site.collections[c].docs}.sort
       else
         page.site.collections[page['paginate']['collection']].docs
       end
@@ -160,8 +160,14 @@ module Octopress
     def page_payload(payload, page)
       config = page.data['paginate']
       collection = collection(page)
+      key = if config['collection'].is_a? Array
+        'posts'
+      else
+        config['collection']
+      end
+
       { 'paginator' => {
-        "#{config['collection']}"       => items(payload, collection),
+        "#{key}"                        => items(payload, collection),
         "page"                          => config['page_num'],
         "per_page"                      => config['per_page'],
         "limit"                         => config['limit'],
